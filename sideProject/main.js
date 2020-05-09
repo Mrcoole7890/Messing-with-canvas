@@ -11,9 +11,13 @@ var windowSpecs = {
   }
 };
 
-function meme() {
-    document.location.href = "https://youtu.be/hlWL5Az4pow";
-}
+var visualObject = function(width, height, xpos, ypos, type) {
+  // To Do add functionality and initisation
+};
+
+var movingObject = function(xpos, ypos, velocity) {
+  // To Do implement visual object first
+};
 
 function mainLoop(window) {
   ctx = window.canvasDoc.getContext("2d");
@@ -25,5 +29,3 @@ function initGame(window) {
   window.setup();
   setInterval( mainLoop, 30, window );
 }
-
-meme();
