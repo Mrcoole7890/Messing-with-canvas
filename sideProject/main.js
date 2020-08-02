@@ -16,8 +16,14 @@ var listOfObjects = [];
 // The most base visual compnet in this project is a "visualObject"
 // A visual object is to be inherited by other objects that may move, interacte, or cause other objects to deconstruct themselves...
 // type is used to comunicate interactions between
-var visualObject = function(width, height, xpos, ypos, window) {
+var visualObject = function(width, height, xpos, ypos, color, window) {
   this.defaultColor = "#0000FF"; // Blue
+  if (color == "null") {
+    this.color = this.defaultColor;
+  }
+  else {
+    this.color = color;
+  }
   this.xpos = xpos;
   this.ypos = ypos;
   this.width = width;
@@ -58,15 +64,15 @@ var visualObject = function(width, height, xpos, ypos, window) {
 
   var ctx = this.window.canvasDoc.getContext("2d");
   this.draw = function(window){
-    ctx.fillStyle = this.defaultColor;
+    ctx.fillStyle = this.color;
     ctx.fillRect(this.xpos, this.ypos, this.width, this.height);
   };
 };
 
 // Constructs a visualObject and updates it xpos and
 // ypos by and given velocity per call by the mainLoop
-var movingObject = function(width, height, xpos, ypos, window, velocity) {
-  this.visualToMakeMoving = new visualObject(width, height, xpos, ypos, window);
+var movingObject = function(width, height, xpos, ypos, color, window, velocity) {
+  this.visualToMakeMoving = new visualObject(width, height, xpos, ypos, color, window);
   this.velocity = velocity;
 
   //  getter/setter for velocity
@@ -77,6 +83,7 @@ var movingObject = function(width, height, xpos, ypos, window, velocity) {
     this.velocity = newVelocity;
   }
 
+  // these functions may need simplified for later reading and review
   this.moveLeft = function() { this.visualToMakeMoving.setXpos(this.visualToMakeMoving.getXpos() - velocity); };
   this.moveRight = function() { this.visualToMakeMoving.setXpos(this.visualToMakeMoving.getXpos() + velocity); };
   this.moveUp = function() { this.visualToMakeMoving.setYpos(this.visualToMakeMoving.getYpos() - velocity); };
@@ -97,6 +104,6 @@ function mainLoop(window, gameObjects) {
 
 function initGame(window, gameObjects) {
   window.setup();
-  gameObjects.push(new movingObject(100, 100, 20, 20, window, 5));
+  gameObjects.push(new movingObject(100, 100, 20, 20, "red", window, 5));
   setInterval( mainLoop, 30, window, gameObjects );
 }
