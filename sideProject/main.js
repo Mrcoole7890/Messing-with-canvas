@@ -75,6 +75,38 @@ var movingObject = function(width, height, xpos, ypos, color, window, velocity) 
   this.visualToMakeMoving = new visualObject(width, height, xpos, ypos, color, window);
   this.velocity = velocity;
 
+  //  getter/setter for xpos
+  this.getXpos = function() {
+    return this.visualToMakeMoving.xpos;
+  };
+  this.setXpos = function(newXpos) {
+    this.visualToMakeMoving.xpos = newXpos;
+  };
+
+  //  getter/stter for ypos
+  this.getYpos = function() {
+    return this.visualToMakeMoving.ypos;
+  };
+  this.setYpos = function(newYpos) {
+    this.visualToMakeMoving.ypos = newYpos;
+  };
+
+  //   getter/setter for width
+  this.getWidth = function() {
+    return this.visualToMakeMoving.width;
+  };
+  this.setWidth = function(newWidth) {
+    this.visualToMakeMoving.width = newWidth;
+  };
+
+  // getter/setter for height
+  this.getHeight = function() {
+    return this.visualToMakeMoving.height;
+  };
+  this.setHeight = function(newHeight) {
+    this.visualToMakeMoving.height = newHeight;
+  };
+
   //  getter/setter for velocity
   this.getVelocity = function() {
     return this.velocity;
@@ -95,15 +127,82 @@ var movingObject = function(width, height, xpos, ypos, color, window, velocity) 
 
 };
 
+// used to verifiy if the movingobject("mo") collides with a visualobject("vo")
+var collisionDetector = function(mo, vo) {
+
+  var leftXOfMo    = mo.getXpos();
+  var rightXOfMo   = mo.getXpos() + mo.getWidth();
+  var topYOfMo     = mo.getYpos();
+  var bottomOfMo   = mo.getYpos() + mo.getHeight();
+
+  var leftXOfVo    = vo.getXpos();
+  var rightXOfVo   = vo.getXpos() + vo.getWidth();
+  var topYOfVo     = vo.getYpos();
+  var bottomOfVo   = vo.getYpos() + vo.getHeight();
+
+  // check left collision of mo
+  this.leftCollision = function() {
+    if( ( (leftXOfVo < leftXOfMo + mo.getVelocity()) && (leftXOfMo + mo.getVelocity() < rightXOfVo) )
+      && ( ( topYOfVo < topYOfMo &&  topYOfMo  < bottomOfVo )
+      ||   ( topYOfVo < bottomOfMo && bottomOfMo < bottomOfVo ) ) ) {
+        return true;
+      }
+      return false;
+  };
+  // check right collision
+  this.rightCollision = function() {
+    if( ( (leftXOfVo < rightXOfMo + mo.getVelocity()) && (rightXOfMo + mo.getVelocity() < rightXOfVo) )
+      && ( ( topYOfVo < topYOfMo && topYOfMo < bottomOfVo )
+      || ( topYOfVo < bottomOfMo && bottomOfMo < bottomOfVo )) ) {
+        return true;
+      }
+      return false;
+  };
+  // check top collision
+  this.topCollision = function() {
+    if( ( (topYOfVo < topYOfMo + mo.getVelocity()) && (topYOfMo + mo.getVelocity() < bottomOfVo) )
+    && ( ( leftXOfVo < leftXOfMo && leftXOfMo < rightXOfVo )
+    || ( leftXOfVo < rightXOfMo && rightXOfMo < rightXOfVo ) ) ) {
+      return true;
+    }
+    return false;
+  };
+  // check bottom collisin
+  this.bottomCollision = function() {
+    if( ( (topYOfVo < bottomOfMo + mo.getVelocity()) && (bottomOfMo + mo.getVelocity() < bottomOfVo) )
+      && ( ( leftXOfVo < leftXOfMo && leftXOfMo < rightXOfVo )
+      || ( leftXOfVo < rightXOfMo && rightXOfMo < rightXOfVo ) ) ) {
+        return true;
+    }
+    return false;
+  };
+
+  this.checkCollision = function() {
+
+    if( this.leftCollision()
+      || this.rightCollision()
+      || this.topCollision()
+      || this.rightCollision()){
+      return true;
+    }
+    return false;
+  }
+};
+
 function mainLoop(window, gameObjects) {
   window.canvasDoc.getContext("2d").clearRect(0, 0, window.width, window.height);
   gameObjects.forEach((i) => {
       i.draw(window);
   });
+
+  var CD = new collisionDetector(gameObjects[0], gameObjects[1]);
+  if (!CD.checkCollision())
+    gameObjects[0].moveDown();
 }
 
 function initGame(window, gameObjects) {
   window.setup();
   gameObjects.push(new movingObject(100, 100, 20, 20, "red", window, 5));
+  gameObjects.push(new visualObject(100, 100, 20, 500, "blue", window));
   setInterval( mainLoop, 30, window, gameObjects );
 }
