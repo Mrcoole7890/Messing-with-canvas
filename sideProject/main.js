@@ -11,8 +11,11 @@ var windowSpecs = {
   }
 };
 
-var visualObject = function(width, height, xpos, ypos, type) {
-  // To Do add functionality and initisation
+// The most base visual compnet in this project is a "visualObject"
+// A visual object is to be inherited by other objects that may move, interacte, or cause other objects to deconstruct themselves...
+// type is used to comunicate interactions between
+var visualObject = function(width, height, xpos, ypos, type, window) {
+
 };
 
 var movingObject = function(xpos, ypos, velocity) {
