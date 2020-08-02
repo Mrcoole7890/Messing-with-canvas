@@ -62,12 +62,29 @@ var visualObject = function(width, height, xpos, ypos, type, window) {
     ctx.fillStyle = this.defaultColor;
     ctx.fillRect(this.xpos, this.ypos, this.width, this.height);
   };
-
-
 };
 
-var movingObject = function(xpos, ypos, velocity) {
-  // To Do implement visual object first
+var movingObject = function(width, height, xpos, ypos, type, window, velocity) {
+  this.visualToMakeMoving = new visualObject(100,100,20,20,"null", window);
+  this.velocity = velocity;
+
+  //  getter/setter for velocity
+  this.getVelocity = function() {
+    return this.velocity;
+  }
+  this.setVelocity = function(newVelocity) {
+    this.velocity = newVelocity;
+  }
+
+  this.moveLeft = function() { this.visualToMakeMoving.setXpos(this.visualToMakeMoving.getXpos() - velocity); };
+  this.moveRight = function() { this.visualToMakeMoving.setXpos(this.visualToMakeMoving.getXpos() + velocity); };
+  this.moveUp = function() { this.visualToMakeMoving.setYpos(this.visualToMakeMoving.getYpos() - velocity); };
+  this.moveDown = function() { this.visualToMakeMoving.setYpos(this.visualToMakeMoving.getYpos() + velocity); };
+
+  this.draw = function(window) {
+    this.visualToMakeMoving.draw(window);
+  }
+
 };
 
 function mainLoop(window, gameObjects) {
@@ -75,13 +92,10 @@ function mainLoop(window, gameObjects) {
   gameObjects.forEach((i) => {
       i.draw(window);
   });
-  gameObjects[0].setHeight(gameObjects[0].getHeight() + 5);
-
-
 }
 
 function initGame(window, gameObjects) {
   window.setup();
-  gameObjects.push(new visualObject(100,100,20,20,"null", window));
+  gameObjects.push(new movingObject(100,100,20,20,"null", window, 5));
   setInterval( mainLoop, 30, window, gameObjects );
 }
