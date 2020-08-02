@@ -16,8 +16,7 @@ var listOfObjects = [];
 // The most base visual compnet in this project is a "visualObject"
 // A visual object is to be inherited by other objects that may move, interacte, or cause other objects to deconstruct themselves...
 // type is used to comunicate interactions between
-//    - if type is "null" the a blue rectangle will appear in its place
-var visualObject = function(width, height, xpos, ypos, type, window) {
+var visualObject = function(width, height, xpos, ypos, window) {
   this.defaultColor = "#0000FF"; // Blue
   this.xpos = xpos;
   this.ypos = ypos;
@@ -64,8 +63,10 @@ var visualObject = function(width, height, xpos, ypos, type, window) {
   };
 };
 
-var movingObject = function(width, height, xpos, ypos, type, window, velocity) {
-  this.visualToMakeMoving = new visualObject(100,100,20,20,"null", window);
+// Constructs a visualObject and updates it xpos and
+// ypos by and given velocity per call by the mainLoop
+var movingObject = function(width, height, xpos, ypos, window, velocity) {
+  this.visualToMakeMoving = new visualObject(width, height, xpos, ypos, window);
   this.velocity = velocity;
 
   //  getter/setter for velocity
@@ -96,6 +97,6 @@ function mainLoop(window, gameObjects) {
 
 function initGame(window, gameObjects) {
   window.setup();
-  gameObjects.push(new movingObject(100,100,20,20,"null", window, 5));
+  gameObjects.push(new movingObject(100, 100, 20, 20, window, 5));
   setInterval( mainLoop, 30, window, gameObjects );
 }
