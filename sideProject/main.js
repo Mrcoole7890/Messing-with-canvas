@@ -244,7 +244,7 @@ function mainLoop(window, gameObjects) {
     gameObjects[0].moveDown();
   }
   else if(! (CD.leftWindowCollision() || CD.rightWindowCollision()) ){
-    gameObjects[0].moveLeft();
+    gameObjects[0].moveRight();
   }
 
 
