@@ -11,10 +11,58 @@ var windowSpecs = {
   }
 };
 
+var listOfObjects = [];
+
 // The most base visual compnet in this project is a "visualObject"
 // A visual object is to be inherited by other objects that may move, interacte, or cause other objects to deconstruct themselves...
 // type is used to comunicate interactions between
+//    - if type is "null" the a blue rectangle will appear in its place
 var visualObject = function(width, height, xpos, ypos, type, window) {
+  this.defaultColor = "#0000FF"; // Blue
+  this.xpos = xpos;
+  this.ypos = ypos;
+  this.width = width;
+  this.height = height;
+  this.window = window;
+
+  //  getter/setter for xpos
+  this.getXpos = function() {
+    return this.xpos;
+  };
+  this.setXpos = function(newXpos) {
+    this.xpos = newXpos;
+  };
+
+  //  getter/stter for ypos
+  this.getYpos = function() {
+    return this.ypos;
+  };
+  this.setYpos = function(newYpos) {
+    this.ypos = newYpos;
+  };
+
+  //   getter/setter for width
+  this.getWidth = function() {
+    return this.width;
+  };
+  this.setWidth = function(newWidth) {
+    this.width = newWidth;
+  };
+
+  // getter/setter for height
+  this.getHeight = function() {
+    return this.height;
+  };
+  this.setHeight = function(newHeight) {
+    this.height = newHeight;
+  };
+
+  var ctx = this.window.canvasDoc.getContext("2d");
+  this.draw = function(window){
+    ctx.fillStyle = this.defaultColor;
+    ctx.fillRect(this.xpos, this.ypos, this.width, this.height);
+  };
+
 
 };
 
@@ -22,13 +70,18 @@ var movingObject = function(xpos, ypos, velocity) {
   // To Do implement visual object first
 };
 
-function mainLoop(window) {
-  ctx = window.canvasDoc.getContext("2d");
-  ctx.fillStyle = "#FF0000";
-  ctx.fillRect(0,0,150,75);
+function mainLoop(window, gameObjects) {
+  window.canvasDoc.getContext("2d").clearRect(0, 0, window.width, window.height);
+  gameObjects.forEach((i) => {
+      i.draw(window);
+  });
+  gameObjects[0].setHeight(gameObjects[0].getHeight() + 5);
+
+
 }
 
-function initGame(window) {
+function initGame(window, gameObjects) {
   window.setup();
-  setInterval( mainLoop, 30, window );
+  gameObjects.push(new visualObject(100,100,20,20,"null", window));
+  setInterval( mainLoop, 30, window, gameObjects );
 }
