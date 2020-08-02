@@ -7,8 +7,8 @@ var windowSpecs = {
     this.canvasDoc.setAttribute("height", this.height+"px");
   },
   clear: function() {
-    this.canvasDoc.clearRect(0, 0, this.canvasDoc.width, this.canvasDoc.height);
-  }
+    this.canvasDoc.getContext("2d").clearRect(0, 0, this.canvasDoc.width, this.canvasDoc.height);
+  },
 };
 
 var listOfObjects = [];
@@ -128,7 +128,7 @@ var movingObject = function(width, height, xpos, ypos, color, window, velocity) 
 };
 
 // used to verifiy if the movingobject("mo") collides with a visualobject("vo")
-var collisionDetector = function(mo, vo) {
+var collisionDetector = function(mo, vo, window) {
 
   var leftXOfMo    = mo.getXpos();
   var rightXOfMo   = mo.getXpos() + mo.getWidth();
@@ -140,39 +140,83 @@ var collisionDetector = function(mo, vo) {
   var topYOfVo     = vo.getYpos();
   var bottomOfVo   = vo.getYpos() + vo.getHeight();
 
+  var leftWindowBorder = 0;
+  var rightWindowBorder = window.width;
+  var topWindowBorder = 0;
+  var bottomWindowBorder = window.height;
+
   // check left collision of mo
   this.leftCollision = function() {
-    if( ( (leftXOfVo < leftXOfMo + mo.getVelocity()) && (leftXOfMo + mo.getVelocity() < rightXOfVo) )
-      && ( ( topYOfVo < topYOfMo &&  topYOfMo  < bottomOfVo )
-      ||   ( topYOfVo < bottomOfMo && bottomOfMo < bottomOfVo ) ) ) {
+    if( ( (leftXOfVo <=  leftXOfMo + mo.getVelocity()) && (leftXOfMo + mo.getVelocity() <= rightXOfVo) )
+      && ( ( topYOfVo <= topYOfMo &&  topYOfMo  <= bottomOfVo )
+      ||   ( topYOfVo <= bottomOfMo && bottomOfMo <= bottomOfVo ) ) ) {
         return true;
       }
       return false;
   };
   // check right collision
   this.rightCollision = function() {
-    if( ( (leftXOfVo < rightXOfMo + mo.getVelocity()) && (rightXOfMo + mo.getVelocity() < rightXOfVo) )
-      && ( ( topYOfVo < topYOfMo && topYOfMo < bottomOfVo )
-      || ( topYOfVo < bottomOfMo && bottomOfMo < bottomOfVo )) ) {
+    if( ( (leftXOfVo <= rightXOfMo + mo.getVelocity()) && (rightXOfMo + mo.getVelocity() <= rightXOfVo) )
+      && ( ( topYOfVo <= topYOfMo && topYOfMo <= bottomOfVo )
+      || ( topYOfVo <= bottomOfMo && bottomOfMo <= bottomOfVo )) ) {
         return true;
       }
       return false;
   };
   // check top collision
   this.topCollision = function() {
-    if( ( (topYOfVo < topYOfMo + mo.getVelocity()) && (topYOfMo + mo.getVelocity() < bottomOfVo) )
-    && ( ( leftXOfVo < leftXOfMo && leftXOfMo < rightXOfVo )
-    || ( leftXOfVo < rightXOfMo && rightXOfMo < rightXOfVo ) ) ) {
+    if( ( (topYOfVo <= topYOfMo + mo.getVelocity()) && (topYOfMo + mo.getVelocity() <= bottomOfVo) )
+    && ( ( leftXOfVo <= leftXOfMo && leftXOfMo <= rightXOfVo )
+    || ( leftXOfVo <= rightXOfMo && rightXOfMo <= rightXOfVo ) ) ) {
       return true;
     }
     return false;
   };
   // check bottom collisin
   this.bottomCollision = function() {
-    if( ( (topYOfVo < bottomOfMo + mo.getVelocity()) && (bottomOfMo + mo.getVelocity() < bottomOfVo) )
-      && ( ( leftXOfVo < leftXOfMo && leftXOfMo < rightXOfVo )
-      || ( leftXOfVo < rightXOfMo && rightXOfMo < rightXOfVo ) ) ) {
+    if( ( (topYOfVo <= bottomOfMo + mo.getVelocity()) && (bottomOfMo + mo.getVelocity() <= bottomOfVo) )
+      && ( ( leftXOfVo <= leftXOfMo && leftXOfMo <= rightXOfVo )
+      || ( leftXOfVo <= rightXOfMo && rightXOfMo <= rightXOfVo ) ) ) {
         return true;
+    }
+    return false;
+  };
+
+  this.topWindowCollision = function() {
+    if( topYOfMo <= topWindowBorder ) {
+      return true;
+    }
+    return false;
+  };
+
+  this.bottomWindowCollision = function() {
+    if( bottomOfMo >= bottomWindowBorder ) {
+      return true;
+    }
+    return false;
+  };
+
+  this.rightWindowCollision = function() {
+    if( rightXOfMo >= rightWindowBorder ) {
+      return true;
+    }
+    return false;
+  };
+
+  this.leftWindowCollision = function() {
+    if( leftXOfMo <= leftWindowBorder ) {
+      return true;
+    }
+    return false;
+  };
+
+  this.windowCollision = function() {
+
+    if(this.topWindowCollision()
+      || this.bottomWindowCollision()
+      || this.leftWindowCollision()
+      || this.rightWindowCollision()) {
+      return true;
     }
     return false;
   };
@@ -190,14 +234,21 @@ var collisionDetector = function(mo, vo) {
 };
 
 function mainLoop(window, gameObjects) {
-  window.canvasDoc.getContext("2d").clearRect(0, 0, window.width, window.height);
+  window.clear();
   gameObjects.forEach((i) => {
       i.draw(window);
   });
 
-  var CD = new collisionDetector(gameObjects[0], gameObjects[1]);
-  if (!CD.checkCollision())
+  var CD = new collisionDetector(gameObjects[0], gameObjects[1], window);
+  if (!CD.checkCollision()){
     gameObjects[0].moveDown();
+  }
+  else if(! (CD.leftWindowCollision() || CD.rightWindowCollision()) ){
+    gameObjects[0].moveLeft();
+  }
+
+
+
 }
 
 function initGame(window, gameObjects) {
