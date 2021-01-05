@@ -251,6 +251,7 @@ function mainLoop(window, gameObjects) {
 
 }
 
+// To start the game use initGame( windowSpec, listOfObjects );
 function initGame(window, gameObjects) {
   window.setup();
   gameObjects.push(new movingObject(100, 100, 20, 20, "red", window, 5));
