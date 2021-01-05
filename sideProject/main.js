@@ -159,7 +159,6 @@ var collisionDetector = function(mo, vo, window) {
   var bottomWindowBorder = window.height;
 
   // check left collision of mo
-  // Possible nessessity to remove the <= and change it to <
   this.leftCollision = function() {
     if( ( (leftXOfVo <  leftXOfMo) && (leftXOfMo <= rightXOfVo) )
       && ( ( topYOfVo < topYOfMo &&  topYOfMo  < bottomOfVo )
@@ -170,7 +169,6 @@ var collisionDetector = function(mo, vo, window) {
       return false;
   };
   // check right collision of mo
-  // Possible nessessity to remove the <= and change it to <
   this.rightCollision = function() {
     if( ( (leftXOfVo <= rightXOfMo) && (rightXOfMo < rightXOfVo) )
       && ( ( topYOfVo < topYOfMo && topYOfMo < bottomOfVo )
@@ -181,7 +179,6 @@ var collisionDetector = function(mo, vo, window) {
       return false;
   };
   // check top collision of mo
-  // Possible nessessity to remove the <= and change it to <
   this.topCollision = function() {
     if( ( (topYOfVo < topYOfMo) && (topYOfMo <= bottomOfVo) )
     && ( ( leftXOfVo < leftXOfMo && leftXOfMo < rightXOfVo )
@@ -192,7 +189,6 @@ var collisionDetector = function(mo, vo, window) {
     return false;
   };
   // check bottom collisin of mo
-  // Possible nessessity to remove the <= and change it to <
   this.bottomCollision = function() {
     if( ( (topYOfVo <= bottomOfMo) && (bottomOfMo < bottomOfVo) )
       && ( ( leftXOfVo < leftXOfMo && leftXOfMo < rightXOfVo )
