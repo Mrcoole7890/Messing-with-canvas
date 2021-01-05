@@ -128,7 +128,7 @@ var movingObject = function(width, height, xpos, ypos, color, window, velocity) 
 };
 
 // Constructs a listener for the player movible object to listen for
-var playerKeyListener = function(window){
+var playerKeyListener = function(){
   //console.log("bitch");
   document.addEventListener("keydown",function(event){
     console.log(event.code + " key was pressed");
@@ -261,7 +261,7 @@ function mainLoop(window, gameObjects) {
     gameObjects[0].moveDown();
   }
 
-  playerKeyListener(window);  
+  playerKeyListener();  
 }
 
 // To start the game use initGame( windowSpec, listOfObjects );
