@@ -148,9 +148,9 @@ var collisionDetector = function(mo, vo, window) {
   // check left collision of mo
   // Possible nessessity to remove the <= and change it to <
   this.leftCollision = function() {
-    if( ( (leftXOfVo <  leftXOfMo) && (leftXOfMo < rightXOfVo) )
+    if( ( (leftXOfVo <  leftXOfMo) && (leftXOfMo <= rightXOfVo) )
       && ( ( topYOfVo < topYOfMo &&  topYOfMo  < bottomOfVo )
-      ||   ( topYOfVo < bottomOfMo && bottomOfMo < bottomOfVo ) ) ) {
+      || ( topYOfVo <= bottomOfMo && bottomOfMo <= bottomOfVo ) ) ) {
         console.log("Left Collision Detected");
         return true;
       }
@@ -161,7 +161,7 @@ var collisionDetector = function(mo, vo, window) {
   this.rightCollision = function() {
     if( ( (leftXOfVo <= rightXOfMo) && (rightXOfMo < rightXOfVo) )
       && ( ( topYOfVo < topYOfMo && topYOfMo < bottomOfVo )
-      || ( topYOfVo < bottomOfMo && bottomOfMo < bottomOfVo )) ) {
+      || ( topYOfVo <= bottomOfMo && bottomOfMo <= bottomOfVo )) ) {
         console.log("Right Collision Detected");
         return true;
       }
@@ -170,9 +170,9 @@ var collisionDetector = function(mo, vo, window) {
   // check top collision of mo
   // Possible nessessity to remove the <= and change it to <
   this.topCollision = function() {
-    if( ( (topYOfVo < topYOfMo) && (topYOfMo < bottomOfVo) )
+    if( ( (topYOfVo < topYOfMo) && (topYOfMo <= bottomOfVo) )
     && ( ( leftXOfVo < leftXOfMo && leftXOfMo < rightXOfVo )
-    || ( leftXOfVo < rightXOfMo && rightXOfMo < rightXOfVo ) ) ) {
+    || ( leftXOfVo <= rightXOfMo && rightXOfMo <= rightXOfVo ) ) ) {
       console.log("Top Collision Detected");
       return true;
     }
@@ -249,20 +249,14 @@ function mainLoop(window, gameObjects) {
 
   var CD = new collisionDetector(gameObjects[0], gameObjects[1], window);
   if (!CD.checkCollision()){
-    gameObjects[0].moveDown();
+    gameObjects[0].moveUp();
   }
-  else if(! (CD.leftWindowCollision() || CD.rightWindowCollision()) ){
-    gameObjects[0].moveRight();
-  }
-
-
-
 }
 
 // To start the game use initGame( windowSpec, listOfObjects );
 function initGame(window, gameObjects) {
   window.setup();
-  gameObjects.push(new movingObject(100, 100, 20, 20, "red", window, 5));
-  gameObjects.push(new visualObject(100, 100, 20, 500, "blue", window));
+  gameObjects.push(new movingObject(100, 100, 20, 500, "red", window, 5));
+  gameObjects.push(new visualObject(100, 100, 20, 100, "blue", window));
   setInterval( mainLoop, 30, window, gameObjects );
 }
