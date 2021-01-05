@@ -147,7 +147,7 @@ var collisionDetector = function(mo, vo, window) {
 
   // check left collision of mo
   this.leftCollision = function() {
-    if( ( (leftXOfVo <=  leftXOfMo + mo.getVelocity()) && (leftXOfMo + mo.getVelocity() <= rightXOfVo) )
+    if( ( (leftXOfVo <=  leftXOfMo) && (leftXOfMo <= rightXOfVo) )
       && ( ( topYOfVo <= topYOfMo &&  topYOfMo  <= bottomOfVo )
       ||   ( topYOfVo <= bottomOfMo && bottomOfMo <= bottomOfVo ) ) ) {
         return true;
@@ -156,7 +156,7 @@ var collisionDetector = function(mo, vo, window) {
   };
   // check right collision
   this.rightCollision = function() {
-    if( ( (leftXOfVo <= rightXOfMo + mo.getVelocity()) && (rightXOfMo + mo.getVelocity() <= rightXOfVo) )
+    if( ( (leftXOfVo <= rightXOfMo) && (rightXOfMo <= rightXOfVo) )
       && ( ( topYOfVo <= topYOfMo && topYOfMo <= bottomOfVo )
       || ( topYOfVo <= bottomOfMo && bottomOfMo <= bottomOfVo )) ) {
         return true;
@@ -165,7 +165,7 @@ var collisionDetector = function(mo, vo, window) {
   };
   // check top collision
   this.topCollision = function() {
-    if( ( (topYOfVo <= topYOfMo + mo.getVelocity()) && (topYOfMo + mo.getVelocity() <= bottomOfVo) )
+    if( ( (topYOfVo <= topYOfMo) && (topYOfMo <= bottomOfVo) )
     && ( ( leftXOfVo <= leftXOfMo && leftXOfMo <= rightXOfVo )
     || ( leftXOfVo <= rightXOfMo && rightXOfMo <= rightXOfVo ) ) ) {
       return true;
@@ -174,7 +174,7 @@ var collisionDetector = function(mo, vo, window) {
   };
   // check bottom collisin
   this.bottomCollision = function() {
-    if( ( (topYOfVo <= bottomOfMo + mo.getVelocity()) && (bottomOfMo + mo.getVelocity() <= bottomOfVo) )
+    if( ( (topYOfVo <= bottomOfMo) && (bottomOfMo <= bottomOfVo) )
       && ( ( leftXOfVo <= leftXOfMo && leftXOfMo <= rightXOfVo )
       || ( leftXOfVo <= rightXOfMo && rightXOfMo <= rightXOfVo ) ) ) {
         return true;
