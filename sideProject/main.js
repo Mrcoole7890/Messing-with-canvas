@@ -127,6 +127,11 @@ var movingObject = function(width, height, xpos, ypos, color, window, velocity) 
 
 };
 
+// Constructs a listener for the player movible object to listen for
+var playerListener = function(event){
+  
+}
+
 // Constructs a player movible object
 var playerObject = function(width, height, xpos, ypos, color, window, velocity, listener) {
 
