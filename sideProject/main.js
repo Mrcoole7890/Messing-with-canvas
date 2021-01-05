@@ -128,8 +128,11 @@ var movingObject = function(width, height, xpos, ypos, color, window, velocity) 
 };
 
 // Constructs a listener for the player movible object to listen for
-var playerListener = function(event){
-  
+var playerKeyListener = function(window){
+  //console.log("bitch");
+  document.addEventListener("keydown",function(event){
+    console.log(event.code + " key was pressed");
+  });
 }
 
 // Constructs a player movible object
@@ -160,7 +163,7 @@ var collisionDetector = function(mo, vo, window) {
   this.leftCollision = function() {
     if( ( (leftXOfVo <  leftXOfMo) && (leftXOfMo <= rightXOfVo) )
       && ( ( topYOfVo < topYOfMo &&  topYOfMo  < bottomOfVo )
-      || ( topYOfVo <= bottomOfMo && bottomOfMo <= bottomOfVo ) ) ) {
+      || ( topYOfVo < bottomOfMo && bottomOfMo < bottomOfVo ) ) ) {
         console.log("Left Collision Detected");
         return true;
       }
@@ -171,7 +174,7 @@ var collisionDetector = function(mo, vo, window) {
   this.rightCollision = function() {
     if( ( (leftXOfVo <= rightXOfMo) && (rightXOfMo < rightXOfVo) )
       && ( ( topYOfVo < topYOfMo && topYOfMo < bottomOfVo )
-      || ( topYOfVo <= bottomOfMo && bottomOfMo <= bottomOfVo )) ) {
+      || ( topYOfVo < bottomOfMo && bottomOfMo < bottomOfVo )) ) {
         console.log("Right Collision Detected");
         return true;
       }
@@ -182,7 +185,7 @@ var collisionDetector = function(mo, vo, window) {
   this.topCollision = function() {
     if( ( (topYOfVo < topYOfMo) && (topYOfMo <= bottomOfVo) )
     && ( ( leftXOfVo < leftXOfMo && leftXOfMo < rightXOfVo )
-    || ( leftXOfVo <= rightXOfMo && rightXOfMo <= rightXOfVo ) ) ) {
+    || ( leftXOfVo < rightXOfMo && rightXOfMo < rightXOfVo ) ) ) {
       console.log("Top Collision Detected");
       return true;
     }
@@ -193,7 +196,7 @@ var collisionDetector = function(mo, vo, window) {
   this.bottomCollision = function() {
     if( ( (topYOfVo <= bottomOfMo) && (bottomOfMo < bottomOfVo) )
       && ( ( leftXOfVo < leftXOfMo && leftXOfMo < rightXOfVo )
-      || ( leftXOfVo <= rightXOfMo && rightXOfMo <= rightXOfVo ) ) ) {
+      || ( leftXOfVo < rightXOfMo && rightXOfMo < rightXOfVo ) ) ) {
         console.log("Bottom Collision Detected");
         return true;
     }
@@ -261,6 +264,8 @@ function mainLoop(window, gameObjects) {
   if (!CD.checkCollision()){
     gameObjects[0].moveDown();
   }
+
+  playerKeyListener(window);  
 }
 
 // To start the game use initGame( windowSpec, listOfObjects );
