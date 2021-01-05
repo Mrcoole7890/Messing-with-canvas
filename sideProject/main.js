@@ -127,6 +127,11 @@ var movingObject = function(width, height, xpos, ypos, color, window, velocity) 
 
 };
 
+// Constructs a player movible object
+var playerObject = function(width, height, xpos, ypos, color, window, velocity, listener) {
+
+}
+
 // used to verifiy if the movingobject("mo") collides with a visualobject("vo")
 var collisionDetector = function(mo, vo, window) {
 
@@ -249,14 +254,14 @@ function mainLoop(window, gameObjects) {
 
   var CD = new collisionDetector(gameObjects[0], gameObjects[1], window);
   if (!CD.checkCollision()){
-    gameObjects[0].moveUp();
+    gameObjects[0].moveDown();
   }
 }
 
 // To start the game use initGame( windowSpec, listOfObjects );
 function initGame(window, gameObjects) {
   window.setup();
-  gameObjects.push(new movingObject(100, 100, 20, 500, "red", window, 5));
-  gameObjects.push(new visualObject(100, 100, 20, 100, "blue", window));
+  gameObjects.push(new movingObject(10, 100, 50, 100, "red", window, 5));
+  gameObjects.push(new visualObject(100, 45, 30, 500, "blue", window));
   setInterval( mainLoop, 30, window, gameObjects );
 }
