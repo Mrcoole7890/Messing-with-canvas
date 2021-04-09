@@ -9,6 +9,9 @@ var windowSpecs = {
   clear: function() {
     this.canvasDoc.getContext("2d").clearRect(0, 0, this.canvasDoc.width, this.canvasDoc.height);
   },
+  takeDown: function() {
+    this.canvasDoc.innerHTML = "";
+  }
 };
 
 var listOfObjects = [];
@@ -149,7 +152,7 @@ var Game = {
     // check left collision of mo
     // Possible nessessity to remove the <= and change it to <
     this.leftCollision = function() {
-      if( ( (leftXOfVo <  leftXOfMo) && (leftXOfMo <= rightXOfVo) )
+      if( ( (leftXOfVo <=  leftXOfMo) && (leftXOfMo < rightXOfVo) )
         && ( ( topYOfVo < topYOfMo &&  topYOfMo  < bottomOfVo )
         || ( topYOfVo <= bottomOfMo && bottomOfMo <= bottomOfVo ) ) ) {
           console.log("Left Collision Detected");
@@ -199,7 +202,7 @@ var Game = {
     };
 
     this.bottomWindowCollision = function() {
-      if( bottomOfMo >= bottomWindowBorder ) {
+       if( bottomOfMo >= bottomWindowBorder ) {
         return true;
       }
       return false;
@@ -240,6 +243,8 @@ var Game = {
       }
       return false;
     }
+    this.draw = function(){return;};
+
   },
 
   mainLoop: function(window, gameObjects) {
@@ -255,11 +260,11 @@ var Game = {
   },
 
   // To start the game use initGame( windowSpec, listOfObjects );
-  initGame: function(window, gameObjects) {
+  initGame: function(window, gameObjects, loop) {
     window.setup();
-    gameObjects.push(new Game.movingObject(100, 100, 20, 500, "red", window, 5));
-    gameObjects.push(new Game.visualObject(100, 100, 20, 100, "blue", window));
-    setInterval( Game.mainLoop, 30, window, gameObjects );
+    //gameObjects.push(new Game.movingObject(100, 100, 20, 500, "red", window, 5));
+    //gameObjects.push(new Game.visualObject(100, 100, 20, 100, "blue", window));
+    var interval = setInterval(loop, 30, window, gameObjects);
+    window.takeDown();
   }
-
 }
