@@ -1,6 +1,6 @@
 var windowSpecs = {
-  width: 1000,
-  height: 800,
+  width: 1200,
+  height: 1800,
   canvasDoc: document.getElementById("Game"),
   setup: function() {
     this.canvasDoc.setAttribute("width", this.width+"px");
@@ -132,6 +132,53 @@ var Game = {
 
   },
 
+  physicsObject: function(width, height, xpos, ypos, color, window, velocity, vectors) {
+    // these functions may need simplified for later reading and review
+    this.movingToMakePhysics = new Game.movingObject(width, height, xpos, ypos, color, window, velocity);
+    this.vectors = vectors; // vector has format (vectorID, x acceleation, y acceleation)
+
+    this.addVector = function(vector) {
+      this.vectors.push(vector);
+    }
+
+    this.removeVector = function(vectorID) {
+          this.vectors = this.vectors.filter(function(ele){
+          return ele[0] != vectorID;
+      });
+    }
+
+    this.bounceX = function() {
+      this.movingToMakePhysics.setVelocity([this.movingToMakePhysics.getVelocity()[0] * -1 , this.movingToMakePhysics.getVelocity()[1]]);
+      for (var i = 0; i < this.vectors.length; i++) {
+        this.movingToMakePhysics.setVelocity([(this.movingToMakePhysics.getVelocity()[0]  - this.vectors[i][1]) , this.movingToMakePhysics.getVelocity()[1]]);
+      }
+    }
+    this.bounceY = function() {
+      console.log(this.movingToMakePhysics.getVelocity()[1])
+      this.movingToMakePhysics.setVelocity([this.movingToMakePhysics.getVelocity()[0] , (this.movingToMakePhysics.getVelocity()[1] * -1)]);
+      for (var i = 0; i < this.vectors.length; i++) {
+        this.movingToMakePhysics.setVelocity([this.movingToMakePhysics.getVelocity()[0] , (this.movingToMakePhysics.getVelocity()[1] - this.vectors[i][2])]);
+      }
+    }
+
+    this.update = function() {
+      for (var i = 0; i < this.vectors.length; i++) {
+        this.movingToMakePhysics.setVelocity([this.movingToMakePhysics.getVelocity()[0] + this.vectors[i][1] , this.movingToMakePhysics.getVelocity()[1] + this.vectors[i][2]]);
+        this.movingToMakePhysics.visualToMakeMoving.setXpos(this.getXpos() + this.movingToMakePhysics.getVelocity()[0]);
+        this.movingToMakePhysics.visualToMakeMoving.setYpos(this.getYpos() + this.movingToMakePhysics.getVelocity()[1]);
+      }
+    }
+
+    this.getXpos = function() {return this.movingToMakePhysics.getXpos()};
+    this.getYpos = function() {return this.movingToMakePhysics.getYpos()};
+    this.getWidth = function() {return this.movingToMakePhysics.getWidth()};
+    this.getHeight = function() {return this.movingToMakePhysics.getWidth()};
+
+    this.draw = function(window) {
+      this.movingToMakePhysics.draw(window);
+    }
+  },
+
   // used to verifiy if the movingobject("mo") collides with a visualobject("vo")
   collisionDetector: function(mo, vo, window) {
 
@@ -254,18 +301,36 @@ var Game = {
         i.draw(window);
     });
 
-    var CD = new Game.collisionDetector(gameObjects[0], gameObjects[1], window);
-    if (!CD.checkCollision()){
-      gameObjects[0].moveUp();
+    var CD = new Game.collisionDetector(gameObjects[0], new Game.movingObject(100, 100, 200, 100, "red", windowSpecs, 5), window);
+
+    if (CD.leftWindowCollision()){
+      gameObjects[0].movingToMakePhysics.visualToMakeMoving.setXpos(0);
+
+      gameObjects[0].bounceX();
     }
+    if (CD.rightWindowCollision()){
+      gameObjects[0].movingToMakePhysics.visualToMakeMoving
+        .setXpos(windowSpecs.width-gameObjects[0].movingToMakePhysics.visualToMakeMoving.getWidth());
+      gameObjects[0].bounceX();
+    }
+    if (CD.topWindowCollision()){
+      gameObjects[0].movingToMakePhysics.visualToMakeMoving.setYpos(0);
+      gameObjects[0].bounceY();
+    }
+    if (CD.bottomWindowCollision()) {
+      gameObjects[0].movingToMakePhysics.visualToMakeMoving
+        .setYpos(windowSpecs.height-gameObjects[0].movingToMakePhysics.visualToMakeMoving.getHeight());
+      gameObjects[0].bounceY();
+    }
+
+    gameObjects[0].update();
   },
 
   // To start the game use initGame( windowSpec, listOfObjects );
-  initGame: function(window, gameObjects, loop) {
+  initGame: function(window, gameObjects) {
     window.setup();
-    //gameObjects.push(new Game.movingObject(100, 100, 20, 500, "red", window, 5));
-    //gameObjects.push(new Game.visualObject(100, 100, 20, 100, "blue", window));
-    var interval = setInterval(loop, 30, window, gameObjects);
-    window.takeDown();
+    gameObjects.push(new Game.physicsObject(100, 100, 100, 200, "red", window, [15,-12], [["gravitiy", 0, 1]]));
+    var interval = setInterval(Game.mainLoop, 30, window, gameObjects);
+    //window.takeDown();
   }
 }
