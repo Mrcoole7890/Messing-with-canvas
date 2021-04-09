@@ -10,7 +10,8 @@ var windowSpecs = {
     this.canvasDoc.getContext("2d").clearRect(0, 0, this.canvasDoc.width, this.canvasDoc.height);
   },
   takeDown: function() {
-    this.canvasDoc.innerHTML = "";
+    this.canvasDoc.setAttribute("width", "0px");
+    this.canvasDoc.setAttribute("height", "0px");
   }
 };
 
@@ -152,9 +153,9 @@ var Game = {
     // check left collision of mo
     // Possible nessessity to remove the <= and change it to <
     this.leftCollision = function() {
-      if( ( (leftXOfVo <=  leftXOfMo) && (leftXOfMo < rightXOfVo) )
+      if( ( (leftXOfVo <=  leftXOfMo) && (leftXOfMo <= rightXOfVo) )
         && ( ( topYOfVo < topYOfMo &&  topYOfMo  < bottomOfVo )
-        || ( topYOfVo <= bottomOfMo && bottomOfMo <= bottomOfVo ) ) ) {
+        || ( topYOfVo < bottomOfMo && bottomOfMo <= bottomOfVo ) ) ) {
           console.log("Left Collision Detected");
           return true;
         }
