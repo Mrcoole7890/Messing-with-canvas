@@ -1,5 +1,5 @@
 var windowSpecs = {
-  width: 800,
+  width: 1000,
   height: 800,
   canvasDoc: document.getElementById("Game"),
   setup: function() {
@@ -13,10 +13,6 @@ var windowSpecs = {
     this.canvasDoc.setAttribute("width", "0px");
     this.canvasDoc.setAttribute("height", "0px");
   }
-};
-
-var controler = {
-
 };
 
 var listOfObjects = [];
@@ -89,7 +85,7 @@ var Game = {
       return this.visualToMakeMoving.xpos;
     };
     this.setXpos = function(newXpos) {
-      this.visualToMakeMoving.setXpos(newXpos);
+      this.visualToMakeMoving.xpos = newXpos;
     };
 
     //  getter/stter for ypos
@@ -97,7 +93,7 @@ var Game = {
       return this.visualToMakeMoving.ypos;
     };
     this.setYpos = function(newYpos) {
-      this.visualToMakeMoving.setYpos(newYpos);
+      this.visualToMakeMoving.ypos = newYpos;
     };
 
     //   getter/setter for width
@@ -105,7 +101,7 @@ var Game = {
       return this.visualToMakeMoving.width;
     };
     this.setWidth = function(newWidth) {
-      this.visualToMakeMoving.setWidth(newWidth);
+      this.visualToMakeMoving.width = newWidth;
     };
 
     // getter/setter for height
@@ -113,7 +109,7 @@ var Game = {
       return this.visualToMakeMoving.height;
     };
     this.setHeight = function(newHeight) {
-      this.visualToMakeMoving.setHeight(newHeight);
+      this.visualToMakeMoving.height = newHeight;
     };
 
     //  getter/setter for velocity
@@ -125,98 +121,14 @@ var Game = {
     }
 
     // these functions may need simplified for later reading and review
-    this.moveLeft = function() { this.visualToMakeMoving.setXpos(this.visualToMakeMoving.getXpos() - velocity[0]); };
-    this.moveRight = function() { this.visualToMakeMoving.setXpos(this.visualToMakeMoving.getXpos() + velocity[0]); };
-    this.moveUp = function() { this.visualToMakeMoving.setYpos(this.visualToMakeMoving.getYpos() - velocity[1]); };
-    this.moveDown = function() { this.visualToMakeMoving.setYpos(this.visualToMakeMoving.getYpos() + velocity[1]); };
+    this.moveLeft = function() { this.visualToMakeMoving.setXpos(this.visualToMakeMoving.getXpos() - velocity); };
+    this.moveRight = function() { this.visualToMakeMoving.setXpos(this.visualToMakeMoving.getXpos() + velocity); };
+    this.moveUp = function() { this.visualToMakeMoving.setYpos(this.visualToMakeMoving.getYpos() - velocity); };
+    this.moveDown = function() { this.visualToMakeMoving.setYpos(this.visualToMakeMoving.getYpos() + velocity); };
 
     this.draw = function(window) {
       this.visualToMakeMoving.draw(window);
     }
-
-  },
-
-  physicsObject: function(width, height, xpos, ypos, color, window, velocity, vectors) {
-    // these functions may need simplified for later reading and review
-    this.movingToMakePhysics = new Game.movingObject(width, height, xpos, ypos, color, window, velocity);
-    this.vectors = vectors; // vector has format (vectorID, x acceleation, y acceleation)
-
-    this.getXpos = function() { return this.movingToMakePhysics.getXpos();}
-    this.getYpos = function() { return this.movingToMakePhysics.getYpos();}
-    this.getWidth = function() { return this.movingToMakePhysics.getWidth();}
-    this.getHeight= function() { return this.movingToMakePhysics.getHeight();}
-    this.getVelocity= function() {return this.movingToMakePhysics.getVelocity();}
-    this.setVelocity= function(newVelocity) {return this.movingToMakePhysics.setVelocity(newVelocity);}
-
-    this.addVector = function(vector) {
-      this.vectors.push(vector);
-    }
-
-    this.removeVector = function(vectorID) {
-          this.vectors = this.vectors.filter(function(ele){
-          return ele[0] != vectorID;
-      });
-    }
-
-    this.bounceX = function(decayX = -1, decayY = 1) {
-      this.setVelocity([this.getVelocity()[0] * decayX , this.getVelocity()[1]*decayY]);
-      for (var i = 0; i < this.vectors.length; i++) {
-        this.setVelocity([(this.getVelocity()[0] - this.vectors[i][1]) , this.getVelocity()[1]]);
-      }
-    }
-    this.bounceY = function(decayX = 1, decayY = -1) {
-      console.log(this.getVelocity()[1])
-      this.setVelocity([this.getVelocity()[0] * decayX , (this.getVelocity()[1] * decayY)]);
-      for (var i = 0; i < this.vectors.length; i++) {
-        this.setVelocity([this.getVelocity()[0] , (this.getVelocity()[1] - this.vectors[i][2])]);
-      }
-    }
-
-    this.update = function() {
-      for (var i = 0; i < this.vectors.length; i++) {
-        this.setVelocity([this.getVelocity()[0] + this.vectors[i][1] , this.getVelocity()[1] + this.vectors[i][2]]);
-        this.movingToMakePhysics.visualToMakeMoving.setXpos(this.getXpos() + this.movingToMakePhysics.getVelocity()[0]); //For some reason I cannot explain
-        this.movingToMakePhysics.visualToMakeMoving.setYpos(this.getYpos() + this.movingToMakePhysics.getVelocity()[1]); //I am required to access visualToMakeMoving
-      }
-    }
-
-    this.draw = function(window) {
-      this.movingToMakePhysics.draw(window);
-    }
-  },
-
-  CollisionHandeler: function(mo1,mo2) {
-
-    this.movingObjectOne = mo1;
-    this.movingObjectTwo = mo2;
-    this.collisionDetector = new Game.collisionDetector(this.movingObjectOne,this.movingObjectTwo, windowSpecs);
-    this.topWindowCollisionHandeler;
-    this.bottomWindowCollisionHandeler;
-    this.rightWindowCollisionHandeler;
-    this.leftWindowCollisionHandeler;
-
-    this.onLeftWindowCollision = function(functionCall) {
-        this.leftWindowCollisionHandeler = functionCall;
-    };
-
-    this.onRightWindowCollision = function(functionCall) {
-      this.rightWindowCollisionHandeler = functionCall;
-    };
-
-    this.onTopWindowCollision = function(functionCall) {
-      this.topWindowCollisionHandeler = functionCall;
-    };
-
-    this.onBottomWindowCollision = function(functionCall) {
-      this.bottomWindowCollisionHandeler = functionCall;
-    };
-
-    this.draw = function() {
-      if (this.collisionDetector.bottomWindowCollision()) { this.bottomWindowCollisionHandeler(); }
-      if (this.collisionDetector.topWindowCollision()) { this.topWindowCollisionHandeler(); }
-      if (this.collisionDetector.rightWindowCollision()) { this.rightWindowCollisionHandeler(); }
-      if (this.collisionDetector.leftWindowCollision()) { this.leftWindowCollisionHandeler(); }
-    };
 
   },
 
@@ -342,38 +254,18 @@ var Game = {
         i.draw(window);
     });
 
-    gameObjects[1].collisionDetector = new Game.collisionDetector(gameObjects[0], new Game.movingObject(100, 100, 200, 100, "red", windowSpecs, 5), window);
-
-    gameObjects[0].update();
+    var CD = new Game.collisionDetector(gameObjects[0], gameObjects[1], window);
+    if (!CD.checkCollision()){
+      gameObjects[0].moveUp();
+    }
   },
 
   // To start the game use initGame( windowSpec, listOfObjects );
-  initGame: function(window, gameObjects) {
+  initGame: function(window, gameObjects, loop) {
     window.setup();
-    gameObjects.push(new Game.physicsObject(50, 50, 100, 200, "red", window, [12,-.5], [["gravitiy", 0, 2]]));
-    gameObjects.push(new Game.CollisionHandeler(gameObjects[0], gameObjects[0]));
-
-    gameObjects[1].onLeftWindowCollision(function() {
-      gameObjects[0].movingToMakePhysics.visualToMakeMoving.setXpos(0);
-
-      gameObjects[0].bounceX(-1,1);
-    })
-    gameObjects[1].onRightWindowCollision(function() {
-      gameObjects[0].movingToMakePhysics.visualToMakeMoving
-        .setXpos(windowSpecs.width-gameObjects[0].movingToMakePhysics.visualToMakeMoving.getWidth());
-      gameObjects[0].bounceX(-1,1);
-    })
-    gameObjects[1].onTopWindowCollision(function() {
-      gameObjects[0].movingToMakePhysics.visualToMakeMoving.setYpos(0);
-      gameObjects[0].bounceY(1,-1);
-    })
-    gameObjects[1].onBottomWindowCollision(function() {
-      gameObjects[0].movingToMakePhysics.visualToMakeMoving
-        .setYpos(windowSpecs.height-gameObjects[0].movingToMakePhysics.visualToMakeMoving.getHeight());
-      gameObjects[0].bounceY(1,-1);
-    })
-
-    var interval = setInterval(Game.mainLoop, 15, window, gameObjects);
-    //window.takeDown();
+    //gameObjects.push(new Game.movingObject(100, 100, 20, 500, "red", window, 5));
+    //gameObjects.push(new Game.visualObject(100, 100, 20, 100, "blue", window));
+    var interval = setInterval(loop, 30, window, gameObjects);
+    window.takeDown();
   }
 }
