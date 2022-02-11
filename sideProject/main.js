@@ -330,11 +330,14 @@ var Game = {
       Game.updateVelocityOnWindowCollision(i, CD, 1.045);
       i.update();
 
-    });
+    var CD = new Game.collisionDetector(gameObjects[0], gameObjects[1], window);
+    if (!CD.checkCollision()){
+      gameObjects[0].moveUp();
+    }
   },
 
   // To start the game use initGame( windowSpec, listOfObjects );
-  initGame: function(window, gameObjects) {
+  initGame: function(window, gameObjects, loop) {
     window.setup();
     for(var i = 0; i < 1; i++) {
       gameObjects.push(new Game.physicsObject(100, 100, 1, 1, "red", window, [Math.floor(Math.random() * 50), -1 * (Math.floor(Math.random() * 50))], [["gravitiy", 0, 1] ]));
