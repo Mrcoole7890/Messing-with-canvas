@@ -18,22 +18,18 @@ var windowSpecs = {
 var listOfObjects = [];
 
 var Game = {
-  // The most base visual compnet in this project is a "visualObject"
-  // A visual object is to be inherited by other objects that may move, interacte, or cause other objects to deconstruct themselves...
-  // type is used to comunicate interactions between
-  visualObject: function(width, height, xpos, ypos, color, window) {
-    this.defaultColor = "#0000FF"; // blue
-    if (color == "null") {
-      this.color = this.defaultColor;
-    }
-    else {
-      this.color = color;
-    }
+
+  physicsObject: function(width, height, xpos, ypos, color, window, velocity, vectors) {
+    // these functions may need simplified for later reading and review
+    this.vectors = vectors; // vector has format (vectorID, x acceleation, y acceleation)
+
     this.xpos = xpos;
     this.ypos = ypos;
     this.width = width;
     this.height = height;
     this.window = window;
+
+    this.velocity = velocity;
 
     //  getter/setter for xpos
     this.getXpos = function() {
@@ -67,50 +63,9 @@ var Game = {
       this.height = newHeight;
     };
 
-    var ctx = this.window.canvasDoc.getContext("2d");
-    this.draw = function(window){
-      ctx.fillStyle = this.color;
-      ctx.fillRect(this.xpos, this.ypos, this.width, this.height);
-    };
-  },
-
-  // Constructs a visualObject and updates it xpos and
-  // ypos by and given velocity per call by the mainLoop
-  movingObject: function(width, height, xpos, ypos, color, window, velocity) {
-    this.visualToMakeMoving = new Game.visualObject(width, height, xpos, ypos, color, window);
-    this.velocity = velocity;
-
-    //  getter/setter for xpos
-    this.getXpos = function() {
-      return this.visualToMakeMoving.xpos;
-    };
-    this.setXpos = function(newXpos) {
-      this.visualToMakeMoving.xpos = newXpos;
-    };
-
-    //  getter/stter for ypos
-    this.getYpos = function() {
-      return this.visualToMakeMoving.ypos;
-    };
-    this.setYpos = function(newYpos) {
-      this.visualToMakeMoving.ypos = newYpos;
-    };
-
-    //   getter/setter for width
-    this.getWidth = function() {
-      return this.visualToMakeMoving.width;
-    };
-    this.setWidth = function(newWidth) {
-      this.visualToMakeMoving.width = newWidth;
-    };
-
-    // getter/setter for height
-    this.getHeight = function() {
-      return this.visualToMakeMoving.height;
-    };
-    this.setHeight = function(newHeight) {
-      this.visualToMakeMoving.height = newHeight;
-    };
+    this.addVector = function(vector) {
+      this.vectors.push(vector);
+    }
 
     //  getter/setter for velocity
     this.getVelocity = function() {
@@ -121,62 +76,46 @@ var Game = {
     }
 
     // these functions may need simplified for later reading and review
-    this.moveLeft = function() { this.visualToMakeMoving.setXpos(this.visualToMakeMoving.getXpos() - velocity); };
-    this.moveRight = function() { this.visualToMakeMoving.setXpos(this.visualToMakeMoving.getXpos() + velocity); };
-    this.moveUp = function() { this.visualToMakeMoving.setYpos(this.visualToMakeMoving.getYpos() - velocity); };
-    this.moveDown = function() { this.visualToMakeMoving.setYpos(this.visualToMakeMoving.getYpos() + velocity); };
+    this.moveLeft = function() { this.setXpos(this.getXpos() - velocity); };
+    this.moveRight = function() { this.setXpos(this.getXpos() + velocity); };
+    this.moveUp = function() { this.setYpos(this.getYpos() - velocity); };
+    this.moveDown = function() { this.setYpos(this.getYpos() + velocity); };
 
-    this.draw = function(window) {
-      this.visualToMakeMoving.draw(window);
-    }
-
-  },
-
-  physicsObject: function(width, height, xpos, ypos, color, window, velocity, vectors) {
-    // these functions may need simplified for later reading and review
-    this.movingToMakePhysics = new Game.movingObject(width, height, xpos, ypos, color, window, velocity);
-    this.vectors = vectors; // vector has format (vectorID, x acceleation, y acceleation)
-
-    this.addVector = function(vector) {
-      this.vectors.push(vector);
-    }
 
     this.removeVector = function(vectorID) {
           this.vectors = this.vectors.filter(function(ele){
           return ele[0] != vectorID;
       });
-    }
+    };
 
     this.bounceX = function(decayX = 1) {
-      this.movingToMakePhysics.setVelocity([this.movingToMakePhysics.getVelocity()[0] * -1 , this.movingToMakePhysics.getVelocity()[1] * decayX]);
+      this.setVelocity([this.getVelocity()[0] * -1 , this.getVelocity()[1] * decayX]);
       for (var i = 0; i < this.vectors.length; i++) {
-        this.movingToMakePhysics.setVelocity([(this.movingToMakePhysics.getVelocity()[0]  - this.vectors[i][1]) , this.movingToMakePhysics.getVelocity()[1]*decayX]);
+        this.setVelocity([(this.getVelocity()[0]  - this.vectors[i][1]) , this.getVelocity()[1]*decayX]);
       }
-    }
+    };
+
     this.bounceY = function(decayY = 1) {
-      console.log(this.movingToMakePhysics.getVelocity()[1])
-      this.movingToMakePhysics.setVelocity([this.movingToMakePhysics.getVelocity()[0]*decayY , (this.movingToMakePhysics.getVelocity()[1] * (-1 * decayY))]);
+      console.log(this.getVelocity()[1])
+      this.setVelocity([this.getVelocity()[0]*decayY , (this.getVelocity()[1] * (-1 * decayY))]);
       for (var i = 0; i < this.vectors.length; i++) {
-        this.movingToMakePhysics.setVelocity([this.movingToMakePhysics.getVelocity()[0]*decayY , (this.movingToMakePhysics.getVelocity()[1] - this.vectors[i][2])]);
+        this.setVelocity([this.getVelocity()[0]*decayY , (this.getVelocity()[1] - this.vectors[i][2])]);
       }
-    }
+    };
 
     this.update = function() {
       for (var i = 0; i < this.vectors.length; i++) {
-        this.movingToMakePhysics.setVelocity([this.movingToMakePhysics.getVelocity()[0] + this.vectors[i][1] , this.movingToMakePhysics.getVelocity()[1] + this.vectors[i][2]]);
-        this.movingToMakePhysics.visualToMakeMoving.setXpos(this.getXpos() + this.movingToMakePhysics.getVelocity()[0]);
-        this.movingToMakePhysics.visualToMakeMoving.setYpos(this.getYpos() + this.movingToMakePhysics.getVelocity()[1]);
+        this.setVelocity([this.getVelocity()[0] + this.vectors[i][1] , this.getVelocity()[1] + this.vectors[i][2]]);
+        this.setXpos(this.getXpos() + this.getVelocity()[0]);
+        this.setYpos(this.getYpos() + this.getVelocity()[1]);
       }
-    }
+    };
 
-    this.getXpos = function() {return this.movingToMakePhysics.getXpos()};
-    this.getYpos = function() {return this.movingToMakePhysics.getYpos()};
-    this.getWidth = function() {return this.movingToMakePhysics.getWidth()};
-    this.getHeight = function() {return this.movingToMakePhysics.getWidth()};
-
-    this.draw = function(window) {
-      this.movingToMakePhysics.draw(window);
-    }
+    var ctx = this.window.canvasDoc.getContext("2d");
+    this.draw = function(window){
+      ctx.fillStyle = this.color;
+      ctx.fillRect(this.xpos, this.ypos, this.width, this.height);
+    };
   },
 
   // used to verifiy if the movingobject("mo") collides with a visualobject("vo")
@@ -299,22 +238,20 @@ var Game = {
   },
   updateVelocityOnWindowCollision: function(square, collisionDetectorObject, newVelocityFactor) {
     if (collisionDetectorObject.leftWindowCollision()){
-      square.movingToMakePhysics.visualToMakeMoving.setXpos(0);
+      square.setXpos(0);
 
       square.bounceX(newVelocityFactor);
     }
     if (collisionDetectorObject.rightWindowCollision()){
-      square.movingToMakePhysics.visualToMakeMoving
-        .setXpos(windowSpecs.width-square.movingToMakePhysics.visualToMakeMoving.getWidth());
+      square.setXpos(windowSpecs.width-square.getWidth());
       square.bounceX(newVelocityFactor);
     }
     if (collisionDetectorObject.topWindowCollision()){
-      square.movingToMakePhysics.visualToMakeMoving.setYpos(0);
+      square.setYpos(0);
       square.bounceY(newVelocityFactor);
     }
     if (collisionDetectorObject.bottomWindowCollision()) {
-      square.movingToMakePhysics.visualToMakeMoving
-        .setYpos(windowSpecs.height-square.movingToMakePhysics.visualToMakeMoving.getHeight());
+      square.setYpos(windowSpecs.height-square.getHeight());
       square.bounceY(newVelocityFactor);
     }
   },
@@ -326,7 +263,7 @@ var Game = {
     });
     //var CD = new Game.collisionDetector(gameObjects[0], new Game.movingObject(100, 100, 200, 100, "red", windowSpecs, 5), window);
     gameObjects.forEach((i) => {
-      CD = new Game.collisionDetector(i, new Game.movingObject(100, 100, 200, 100, "red", windowSpecs, 5), window);
+      CD = new Game.collisionDetector(i, new Game.physicsObject(100, 100, 1, 1, "red", window, [Math.floor(Math.random() * 50), -1 * (Math.floor(Math.random() * 50))], [["gravitiy", 0, 1] ]), window);
       Game.updateVelocityOnWindowCollision(i, CD, 1.045);
       i.update();
 
