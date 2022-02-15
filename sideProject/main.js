@@ -121,6 +121,12 @@ var Game = {
   // used to verifiy if the movingobject("mo") collides with a visualobject("vo")
   collisionDetector: function(mo, vo, window) {
 
+    this.isMONull = function() { return mo == null; };
+    this.isVONull = function() { return vo == null; };
+
+    this.setVO = function(newVO) {vo = newVO};
+    this.setMO = function(newMO) {mo = newMO};
+
     var leftXOfMo    = mo.getXpos();
     var rightXOfMo   = mo.getXpos() + mo.getWidth();
     var topYOfMo     = mo.getYpos();
@@ -233,9 +239,6 @@ var Game = {
     this.draw = function(){return;};
 
   },
-  squareTimesTen: function() {
-
-  },
   updateVelocityOnWindowCollision: function(square, collisionDetectorObject, newVelocityFactor) {
     if (collisionDetectorObject.leftWindowCollision()){
       square.setXpos(0);
@@ -243,7 +246,7 @@ var Game = {
       square.bounceX(newVelocityFactor);
     }
     if (collisionDetectorObject.rightWindowCollision()){
-      square.setXpos(windowSpecs.width-square.getWidth());
+      square.setXpos(windowSpecs.width-square.getWidth()); // This is bad and needs decoupled
       square.bounceX(newVelocityFactor);
     }
     if (collisionDetectorObject.topWindowCollision()){
@@ -251,9 +254,12 @@ var Game = {
       square.bounceY(newVelocityFactor);
     }
     if (collisionDetectorObject.bottomWindowCollision()) {
-      square.setYpos(windowSpecs.height-square.getHeight());
+      square.setYpos(windowSpecs.height-square.getHeight()); // This is bad and needs decoupled
       square.bounceY(newVelocityFactor);
     }
+  },
+  updateVelocityOnPysicsObjectCollision: function() {
+    // Before I can do this I need to decoupled the updateVelocityOnWindowCollision
   },
 
   mainLoop: function(window, gameObjects) {
